@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: postgres-db
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+    networks:
+      - spring-pg-net
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    container_name: api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file: "./.env"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    volumes:
+      - .:/app  # monta o código fonte local dentro do container para hot reload
+      - ~/.m2:/root/.m2  # monta o cache do Maven para acelerar builds
+    ports:
+      - "8080:8080"
+    networks:
+      - spring-pg-net
+
+volumes:
+  pg-data:
+
+networks:
+  spring-pg-net:
+    driver: bridge

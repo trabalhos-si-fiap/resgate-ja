@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: resgate-ja
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:postgres-db}:${DB_PORT:5432}/${DB_NAME:postgres}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  docker:
+    compose:
+      enabled: false
+
+api:
+  security:
+    token:
+      secret: ${SECRET_JWT:904914a20c3b2e3b5b0f0950a15a1bb1ce814c47}
+
+
+BREVO_API_KEY: ${BREVO_KEY}
+IP_PROD: ${IP_PROD}
